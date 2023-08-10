@@ -16,6 +16,7 @@ conn = psycopg2.connect(database=data_base, user=user, password=password)
 #         ''')
 #     conn.commit()
 
+
 #     Функция, создающая структуру БД (таблицы)
 
 
@@ -34,6 +35,7 @@ def create_clients_db():
             tel_number INTEGER PRIMARY KEY NOT NULL);
                 ''')
         conn.commit()
+        
 
     # Функция, позволяющая добавить нового клиента
 
@@ -44,6 +46,9 @@ def add_client(cl_id: int, first_n: str, second_n: str, mail: str):
             INSERT INTO client(client_id, first_name, second_name, email) VALUES(%s, %s, %s, %s);
             ''', (cl_id, first_n, second_n, mail))
         conn.commit()
+        
+
+# Функция, позволяющая добавить телефон для существующего клиента
 
 
 def add_tel_number(client_id: int, tel_numb: int):
@@ -52,8 +57,9 @@ def add_tel_number(client_id: int, tel_numb: int):
             INSERT INTO tel_number(client_id, tel_number) VALUES(%s, %s);
             ''', (client_id, tel_numb))
         conn.commit()
+        
 
-    # Функция, позволяющая добавить телефон для существующего клиента
+# Функция, позволяющая получить информаю о клиенте по его ID)
 
 
 def client_data(client_id: int):
@@ -64,6 +70,7 @@ def client_data(client_id: int):
             WHERE c.client_id = %s;
             ''', (client_id,))
         print(cur.fetchall())
+        
 
     # Функция, позволяющая изменить данные о клиенте.
 
@@ -76,6 +83,7 @@ def client_modify(client_id: int, first_name: str, second_name: str, email: str)
             WHERE client_id = %s;
             ''', (first_name, second_name, email, client_id,))
         conn.commit()
+        
 
     # Функция, позволяющая удалить телефон для существующего клиента.
 
@@ -87,6 +95,7 @@ def tel_del(clint_id: int):
             WHERE client_id = %s;
             ''', (clint_id,))
         conn.commit()
+        
 
     # Функция, позволяющая удалить существующего клиента.
 
@@ -99,6 +108,7 @@ def client_del(client_id: int):
             WHERE client_id = %s
             ''', (client_id,))
         conn.commit()
+        
 
     # Функция, позволяющая найти клиента по его данным: имени, фамилии, email или телефону.
 
