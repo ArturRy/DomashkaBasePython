@@ -1,9 +1,9 @@
 import psycopg2
 
-data_base = 'data_bade'
-user = 'user'
-password = 'password'
-conn = psycopg2.connect(database=data_base, user=user, password=password)
+# data_base = 'domashka1'
+# user = 'postgres'
+# password = 'Frdfkfyu'
+conn = psycopg2.connect(database="domashka", user="postgres", password="Frdfkfyu")
 
 
 #      Домашнее задание к лекции «Работа с PostgreSQL из Python»
@@ -68,16 +68,18 @@ def client_data(client_id: int):
     # Функция, позволяющая изменить данные о клиенте.
 
 
-def client_modify(client_id: int, first_name: str, second_name: str, email: str):
+def client_modify(client_id):
+    info = input('Введите параметр, который вы хотели бы изменить')
+    info2 = str(input('Введите новое значение параметра'))
     with conn.cursor() as cur:
-        cur.execute('''
+        cur.execute(f'''
             UPDATE client
-            SET(first_name, second_name, email) = (%s, %s, %s)
+            SET {info} = %s
             WHERE client_id = %s;
-            ''', (first_name, second_name, email, client_id,))
-        conn.commit()
+            ''', (info2, client_id,))
 
-    # Функция, позволяющая удалить телефон для существующего клиента.
+
+# client_modify(1)
 
 
 def tel_del(clint_id: int):
@@ -128,5 +130,17 @@ def search_client(info):
             print('Некорректный тип данных')
 
 
-conn.close()
+def find_client(first_name=None, second_name=None, email=None, tel_number=None):
+    with conn.cursor() as cur:
+        cur.execute('''
+            SELECT c.client_id from client c
+            LEFT JOIN tel_number t ON c.client_id = t.client_id
+            WHERE (c.first_name = %(first_name)s or %(first_name)s IS NULL)
+            AND (c.second_name = %(second_name)s or %(second_name)s IS NULL)
+            AND (c.email = %(email)s or %(email)s IS NULL)
+            AND (t.tel_number = %(tel_number)s or %(tel_number)s IS NULL);
+            ''', {'first_name': first_name, 'second_name': second_name, 'email': email, 'tel_number': tel_number},)
+        print(cur.fetchall())
 
+
+conn.close()
